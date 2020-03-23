@@ -1,9 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import InputField from '../common/InputField';
 import Button from '../common/Button';
+import Form from '../common/Form';
 import Joi from 'joi';
+import http from '../services/Http';
+import Auth from '../services/Auth';
 
-class Login extends Component {
+
+
+class Login extends Form {
     state = { 
         data: {
             email: '',
@@ -15,7 +20,7 @@ class Login extends Component {
     //setting the schema for joi validation
     schema = {
         email: Joi.string().email().required(),
-        password: Joi.string().min(3).required()
+        password: Joi.string().required()
     } 
 
     handleChange = (e) => {
@@ -25,32 +30,18 @@ class Login extends Component {
             data: data
         })
     }
-    
-    validate = () => {
-        let {error} = Joi.validate(this.state.data, this.schema, { abortEarly: false });
-        //if validator return no error
-        if(!error) return null;
-        const errors = {...this.state.errors};
-        //loop through validator error and add in errors const according to data fields
-        error.details.map( detail => {
-            errors[detail.path[0]] = detail.message
-        })
-        //return the error object
-        return errors;
-    }
 
-    handleSubmit = (e) => {
-        e.preventDefault();
-        //call the validator function
-        let errors = this.validate();
-        //set the errors in the state
-        this.setState({
-            errors: errors || {}
-        })
-        //if has error return, we don;t want to submit form
-        if(errors) return;
-
-        console.log('submit');
+    async doSubmit(){
+        try {
+            const {data} = await http.post('http://127.0.0.1:8000/api/login', { email: this.state.data.email, password: this.state.data.password });
+            Auth.setToken(data.token.original);
+            window.location = '/';
+        } catch (ex) {
+            if(ex.response && ex.response.status === 401){
+                console.log('Invalid Credientials');
+            }
+        }
+        
     }
 
     render() { 

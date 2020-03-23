@@ -1,9 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import InputField from '../common/InputField';
 import Button from '../common/Button';
+import Form from '../common/Form';
 import Joi from 'joi';
+import http from '../services/Http';
+import auth from '../services/Auth';
 
-class Register extends Component {
+class Register extends Form {
     state = { 
         data: {
             email: '',
@@ -22,37 +25,36 @@ class Register extends Component {
     
     handleChange = (e) => {
         const data = {...this.state.data};
-        data[e.currentTarget.name] = e.currentTarget.name;
+        data[e.currentTarget.name] = e.currentTarget.value;
         this.setState({
             data: data
         });
     }
 
-    //function for validation
-    validate = () => {
-        let { error } = Joi.validate(this.state.data, this.schema, { abortEarly: false });
-        //if not error
-        if(!error) return null;
-        const errors = {};
-         //loop through validator error and add in errors const according to data fields
-        error.details.map( detail => {
-            errors[detail.path[0]] = detail.message
-        })
-
-        return errors;
-    }
-
-    handleSubmit = (e) => {
-        e.preventDefault();
-        const errors = this.validate();
-        //set the errors in the state
-        this.setState({
-            errors: errors || {}
-        })
-        //if has error return, we don;t want to submit form
-        if(errors) return;
-
-        console.log('submit')
+    async doSubmit() {
+        try {
+            const {data} = await http.post('http://127.0.0.1:8000/api/register/user', {
+                username: this.state.data.username,
+                email: this.state.data.email,
+                password: this.state.data.password
+            });
+            //setting the token in localstorage
+            auth.setToken(data.token.original);
+            this.props.history.push('/weather');
+        } catch (ex) {
+            //if form has validation errors then 
+            if(ex.response && ex.response.status === 401){
+                let errors = { ...this.state.errors };
+                errors.username = ex.response.data.errors.username;
+                errors.email = ex.response.data.errors.email;
+                errors.password = ex.response.data.errors.password;
+                
+                this.setState({
+                    errors: errors
+                })
+            }
+        }
+        
     }
      
     render() { 
@@ -91,7 +93,7 @@ class Register extends Component {
                                 error={ errors.username }
                             />  
 
-                            <Button label="Login" sizeClass="btn-block" /> 
+                            <Button label="Register" sizeClass="btn-block" /> 
                         </div>
                     </form>
                 </div>
