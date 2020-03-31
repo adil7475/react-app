@@ -48,10 +48,21 @@ In case of authentication issue, please add your public key in github account or
 
 ## Step 2: Installing Node & NPM:
 As Node will make sure you have node and npm commands are available via command line, just run the below command on your terminal
-> ``` node -v  ```
-> ` and `
-> ``` npm -v ```   
+ ``` node -v \ and \ npm -v ```   
 Note that if you find the npm version less than 5.0.0 you need to update it to the latest version using the below command. you may need to use sudo to grant permission   
-> ``` npm install npm@latest -g
-or
-sudo npm install npm@latest -g ```      
+ ``` npm install \ npm@latest -g ```
+
+``` sudo npm install npm@latest -g ```      
+
+### Step 3: Installing Packages & Dependencies
+After Installing Yarn, now open the directory of sanctuary-web app in your terminal and run
+``` npm install ```
+it will download all the necessary packages and dependencies in the node_modules folder. after installing through yarn, install packages of this folder by following command
+
+### Step 5: For Preview in Browser
+
+Now to start the humour app all you need to do is to run the below command in you terminal root directory of the app.
+
+``` npm start ```
+
+After running the command you can go to [http://127.0.0.1:3000]127.0.0.1:3000 for preview the app in browser
