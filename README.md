@@ -48,6 +48,5 @@ In case of authentication issue, please add your public key in github account or
 
 ## Step 2: Installing Node & NPM:
 As Node will make sure you have node and npm commands are available via command line, just run the below command on your terminal
-``` node -v
-    npm -v
-```        
+``` node -v ```
+    `npm -v`        
